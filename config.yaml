@@ -1,0 +1,103 @@
+# =========================================================
+# prudentia-credit-risk-engine — global config
+# Single source of truth for paths, target definition,
+# split cutoffs, and column classifications.
+# =========================================================
+
+paths:
+  raw_csv: "data/raw/loan.csv"
+  processed_dir: "data/processed/"
+  clean_parquet: "data/processed/loan_clean.parquet"
+  eda_report: "reports/eda_findings.md"
+
+random_seed: 42
+
+# ---------------------------------------------------------
+# Target definition
+# ---------------------------------------------------------
+target:
+  status_col: "loan_status"
+  target_col: "target"          # name of the derived binary column
+  positive_labels:              # bad = 1 (defaulted)
+    - "Charged Off"
+    - "Default"
+  negative_labels:              # good = 0 (paid off)
+    - "Fully Paid"
+  exclude_labels:                # unresolved outcome -> drop from modeling
+    - "Current"
+    - "Issued"
+    - "In Grace Period"
+    - "Late (16-30 days)"
+    - "Late (31-120 days)"
+
+# ---------------------------------------------------------
+# Time-aware split (out-of-time validation)
+# ---------------------------------------------------------
+split:
+  date_col: "issue_d"
+  date_format: "%b-%y"           # e.g. "Dec-18"
+  train_end: "2015-12-31"        # train: issue_d <= train_end
+  valid_end: "2016-12-31"        # valid: train_end < issue_d <= valid_end
+                                  # test:  issue_d > valid_end (out-of-time)
+
+# ---------------------------------------------------------
+# Leakage audit — columns known/post-origination, excluded
+# from any predictive feature set. Grouped by why they leak.
+# ---------------------------------------------------------
+leakage_columns:
+  payment_outcome:
+    - "out_prncp"
+    - "out_prncp_inv"
+    - "total_pymnt"
+    - "total_pymnt_inv"
+    - "total_rec_prncp"
+    - "total_rec_int"
+    - "total_rec_late_fee"
+    - "recoveries"
+    - "collection_recovery_fee"
+    - "last_pymnt_d"
+    - "last_pymnt_amnt"
+    - "next_pymnt_d"
+    - "last_credit_pull_d"
+    - "collections_12_mths_ex_med"
+    - "funded_amnt_inv"
+  identifiers_free_text:
+    - "id"
+    - "member_id"
+    - "url"
+    - "desc"
+    - "title"
+    - "emp_title"
+  # hardship_* and settlement_*/debt_settlement_flag* are matched by
+  # regex in code (see clean_data.LEAKAGE_PREFIXES) since there are
+  # ~20 of them and the list is long/repetitive.
+  leakage_prefixes:
+    - "hardship_"
+    - "settlement_"
+    - "debt_settlement_flag"
+
+# ---------------------------------------------------------
+# Reserved for pricing-benchmark step only (decisioning phase),
+# NEVER used as predictive features for the default model —
+# these are Lending Club's own model output.
+# ---------------------------------------------------------
+pricing_only_columns:
+  - "grade"
+  - "sub_grade"
+  - "int_rate"
+  - "installment"
+
+# ---------------------------------------------------------
+# Columns to always drop outright (not useful, not leakage per se)
+# ---------------------------------------------------------
+drop_columns:
+  - "policy_code"        # constant / always 1
+  - "pymnt_plan"          # near-constant
+  - "application_type"    # keep only if joint-app analysis is in scope later
+
+# ---------------------------------------------------------
+# Missingness handling
+# ---------------------------------------------------------
+cleaning:
+  drop_col_missing_threshold: 0.95   # drop a feature if >95% missing
+  zip_code_truncate: true             # keep only 3-digit prefix (already is)
