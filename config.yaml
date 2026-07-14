@@ -35,7 +35,7 @@ target:
 # ---------------------------------------------------------
 split:
   date_col: "issue_d"
-  date_format: "%b-%y"           # e.g. "Dec-18"
+  date_format: "%b-%Y"        # e.g. "Dec-18"
   train_end: "2015-12-31"        # train: issue_d <= train_end
   valid_end: "2016-12-31"        # valid: train_end < issue_d <= valid_end
                                   # test:  issue_d > valid_end (out-of-time)

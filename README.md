@@ -1,4 +1,4 @@
-Prudentia — Explainable Credit Risk Decisioning Engine
+## Prudentia — Explainable Credit Risk Decisioning Engine
 An end-to-end credit risk system that goes beyond default prediction to deliver calibrated, cost-optimized, explainable, and fairness-audited lending decisions — combining traditional scorecard modeling, modern gradient-boosted machine learning, and production-style model risk monitoring.
 
 Python scikit-learn XGBoost SHAP MLflow FastAPI Streamlit
@@ -318,8 +318,8 @@ This project is not a production credit decisioning system and should not be use
 
 ## Author
 
-*Your Name*
+Chetana Muralidharan
 
-Data Scientist | Machine Learning Engineer | Applied AI
+Data Scientist | Machine Learning Engineer | Applied Data Intelligence
 
-GitHub: *your-github-url*
+GitHub: https://github.com/ChetanaMuralidharan

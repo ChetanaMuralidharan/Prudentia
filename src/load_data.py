@@ -43,10 +43,34 @@ def load_raw(csv_path: str) -> pd.DataFrame:
 
 
 def parse_dates(df: pd.DataFrame, date_format: str = "%b-%y") -> pd.DataFrame:
-    """Parse Lending Club's 'Mon-YY' date columns into datetime64."""
+    """Parse Lending Club's date columns into datetime64."""
     for col in DATE_COLUMNS_MON_YY:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], format=date_format, errors="coerce")
+            raw_values = df[col].dropna().astype(str).str.strip()
+
+            logger.info(f"{col}: sample raw values: {raw_values.head(5).tolist()}")
+
+            df[col] = df[col].astype(str).str.strip()
+
+            parsed = pd.to_datetime(
+                df[col],
+                format=date_format,
+                errors="coerce",
+            )
+
+            # fallback if config format fails
+            if parsed.notna().sum() == 0:
+                logger.warning(
+                    f"{col}: configured date format failed. Trying inferred parsing."
+                )
+                parsed = pd.to_datetime(
+                    df[col],
+                    errors="coerce",
+                )
+
+            df[col] = parsed
+            logger.info(f"{col}: parsed {df[col].notna().sum():,} dates")
+
     return df
 
 
