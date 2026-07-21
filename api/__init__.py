@@ -1,0 +1,1 @@
+"""Prudentia FastAPI package."""

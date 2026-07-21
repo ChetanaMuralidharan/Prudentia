@@ -16,3 +16,11 @@ joblib
 pytest
 jupyter
 ipykernel
+tabulate
+fastapi
+uvicorn[standard]
+streamlit
+requests
+pydantic
+python-multipart
+tabulate
